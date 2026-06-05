@@ -2,12 +2,12 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHRONO MATRIX v3.5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CHRONO MATRIX - FULLSCREEN OS</title>
     <style>
         :root {
             --bg-color: #020206;
-            --panel-bg: rgba(6, 6, 14, 0.8);
+            --panel-bg: rgba(6, 6, 14, 0.85);
             --accent-class: #00f2fe;
             --accent-break: #39ff14;
             --accent-warning: #ff0055;
@@ -20,17 +20,26 @@
             margin: 0;
             padding: 0;
             font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+            /* タップ時の青いハイライトを消す */
+            -webkit-tap-highlight-color: transparent;
+            /* ユーザーによるテキスト選択を禁止してアプリ感を出す */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            /* スクロールを完全に禁止 */
             overflow: hidden;
             position: relative;
+            /* スマホの引っ張って更新（リロード）を禁止 */
+            overscroll-behavior: none;
         }
 
         /* サイバー背景 */
@@ -46,27 +55,32 @@
             z-index: 1;
         }
 
-        /* 4角のシャープなフレーム装飾 */
+        /* フレーム装飾（レスポンシブ対応で画面の端に固定） */
         .frame-corner {
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 4vmin;
+            height: 4vmin;
+            min-width: 16px;
+            min-height: 16px;
             border: 2px solid var(--accent-class);
             z-index: 5;
             opacity: 0.4;
             transition: border-color 0.5s;
         }
-        .top-left { top: 25px; left: 25px; border-right: none; border-bottom: none; }
-        .top-right { top: 25px; right: 25px; border-left: none; border-bottom: none; }
-        .bottom-left { bottom: 25px; left: 25px; border-right: none; border-top: none; }
-        .bottom-right { bottom: 25px; right: 25px; border-left: none; border-top: none; }
+        .top-left { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .top-right { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .bottom-right { bottom: 20px; right: 20px; border-left: none; border-top: none; }
 
-        /* メインコックピットパネル */
+        /* メインコックピットパネル（画面サイズに合わせて伸縮） */
         .core-panel {
-            width: 95%;
+            width: 90vw;
             max-width: 440px;
+            /* 高さ制限を設け、縦長・横長どちらでも綺麗に収まるようにvminを使用 */
+            height: auto;
+            max-height: 90vh;
             background: var(--panel-bg);
-            padding: 45px 35px 40px;
+            padding: 6vmin 5vmin;
             border-radius: 20px;
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
@@ -94,18 +108,21 @@
         .panel-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--text-sub);
-            margin-bottom: 30px;
+            margin-bottom: 4vmin;
             letter-spacing: 2px;
         }
 
         .glitch-title {
-            font-size: 3rem;
+            font-size: 10vmin;
+            /* パネルサイズを超えないよう最大サイズを制限 */
+            max-size: 3rem;
+            font-size: clamp(2rem, 8vw, 3rem);
             font-weight: 900;
             letter-spacing: 2px;
             line-height: 1;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             animation: textPulse 4s infinite alternate;
         }
 
@@ -115,25 +132,26 @@
         }
 
         .time-range {
-            font-size: 0.85rem;
+            font-size: clamp(0.75rem, 3vw, 0.85rem);
             color: var(--text-sub);
-            letter-spacing: 5px;
-            margin-bottom: 35px;
+            letter-spacing: 4px;
+            margin-bottom: 5vmin;
             text-transform: uppercase;
         }
 
-        /* 中央の円形クロノメーター */
+        /* 中央の円形クロノメーター（画面の大きさに滑らかに連動） */
         .chrono-container {
             position: relative;
-            width: 260px;
-            height: 260px;
-            margin: 0 auto 40px;
+            width: clamp(180px, 55vw, 250px);
+            height: clamp(180px, 55vw, 250px);
+            margin: 0 auto 5vmin;
         }
 
         .chrono-svg {
             transform: rotate(-90deg);
-            width: 260px;
-            height: 260px;
+            width: 100%;
+            height: 100%;
+            viewBox: 0 0 260 260;
         }
 
         .chrono-bg {
@@ -142,7 +160,6 @@
             stroke-width: 8;
         }
 
-        /* 内側のドット目盛り */
         .chrono-ticks {
             fill: none;
             stroke: rgba(255, 255, 255, 0.05);
@@ -160,11 +177,11 @@
         /* メーター先端を追従する光のドット */
         .orbit-dot {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            top: 130px;
-            left: 130px;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
             transition: transform 0.3s linear, background 0.5s, box-shadow 0.5s;
@@ -179,7 +196,7 @@
         }
 
         .time-left {
-            font-size: 4.2rem;
+            font-size: clamp(2.5rem, 12vw, 4rem);
             font-weight: bold;
             font-variant-numeric: tabular-nums;
             letter-spacing: -2px;
@@ -187,16 +204,16 @@
         }
 
         .time-label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-sub);
-            letter-spacing: 6px;
-            margin-top: 8px;
+            letter-spacing: 5px;
+            margin-top: 6px;
         }
 
         /* 下部タイムライン */
         .timeline-box {
             position: relative;
-            padding-top: 20px;
+            padding-top: 3vmin;
             border-top: 1px rgba(255, 255, 255, 0.05) solid;
         }
 
@@ -205,7 +222,7 @@
             width: 100%;
             height: 2px;
             background: rgba(255, 255, 255, 0.03);
-            margin-bottom: 15px;
+            margin-bottom: 3vmin;
         }
 
         .rail-fill {
@@ -222,7 +239,7 @@
         }
 
         .label-node {
-            font-size: 0.7rem;
+            font-size: clamp(0.6rem, 2.5vw, 0.75rem);
             color: var(--text-sub);
             transition: all 0.5s ease;
         }
@@ -244,14 +261,14 @@
     <div class="core-panel">
         <div class="panel-header">
             <div id="status-node">NODE // STANDBY</div>
-            <div>INDEX v3.5</div>
+            <div>LOCK_OS v3.8</div>
         </div>
 
         <div class="glitch-title" id="period-name">--------</div>
         <div class="time-range" id="time-range">00:00 // 00:00</div>
 
         <div class="chrono-container">
-            <svg class="chrono-svg">
+            <svg class="chrono-svg" viewBox="0 0 260 260">
                 <circle class="chrono-bg" cx="130" cy="130" r="116"></circle>
                 <circle class="chrono-ticks" cx="130" cy="130" r="106"></circle>
                 <circle class="chrono-bar" id="chrono-bar" cx="130" cy="130" r="116"></circle>
@@ -273,6 +290,25 @@
     </div>
 
     <script>
+        // --- ズーム（拡大縮小）をJavaScript側でも徹底的にブロック ---
+        // 1. ピンチイン・ピンチアウトの禁止
+        document.addEventListener('touchmove', function (event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        // 2. ダブルタップズームの禁止
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // --- タイマーシステム本体 ---
         function toMin(hh, mm) { return hh * 60 + mm; }
         
         const schedule = [
@@ -293,11 +329,10 @@
         ];
 
         const bar = document.getElementById('chrono-bar');
-        const radius = bar.r.baseVal.value;
+        const radius = 116; // 固定値ベースで計算（SVG viewBox対応）
         const circumference = radius * 2 * Math.PI;
         bar.style.strokeDasharray = `${circumference} ${circumference}`;
 
-        // 下部ラベル生成
         const grid = document.getElementById('labels-grid');
         schedule.filter(s => s.type === "class").forEach(s => {
             const node = document.createElement('div');
@@ -352,7 +387,6 @@
                     themeColor = "var(--accent-break)";
                 }
 
-                // コーナーフレームの色も連動
                 document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = themeColor);
 
                 periodName.innerText = currentPeriod.name;
@@ -369,22 +403,28 @@
 
                 const percent = (remainingSeconds / totalPeriodSeconds) * 100;
                 
-                // 円形バーの更新
                 const offset = circumference - (percent / 100) * circumference;
                 bar.style.strokeDashoffset = offset;
                 bar.style.stroke = themeColor;
                 bar.style.filter = `drop-shadow(0 0 12px ${themeColor})`;
 
-                // 先端ドットの位置計算 (角度に変換)
+                // viewBox(260x260)の中心(130, 130)からの相対座標で計算
                 const angle = (percent / 100) * 360 - 90; 
                 const angleRad = (angle * Math.PI) / 180;
                 const dotX = Math.cos(angleRad) * radius;
                 const dotY = Math.sin(angleRad) * radius;
-                orbitDot.style.transform = `translate(calc(-50% + ${dotX}px), calc(-50% + ${dotY}px))`;
+                
+                // CSSの％配置と組み合わせて正確に追従
+                orbitDot.style.transform = `translate(calc(-50% + ${dotX / 2.6}vw), calc(-50% + ${dotY / 2.6}vw))`;
+                
+                // PC用とスマホ用でコンテナサイズが変わるため、より堅牢なコンテナ基準幅でのレスポンシブ計算
+                const containerWidth = document.querySelector('.chrono-container').offsetWidth;
+                const scale = containerWidth / 260;
+                orbitDot.style.transform = `translate(calc(-50% + ${dotX * scale}px), calc(-50% + ${dotY * scale}px))`;
+                
                 orbitDot.style.background = "#ffffff";
                 orbitDot.style.boxShadow = `0 0 12px #ffffff, 0 0 20px ${themeColor}`;
 
-                // 下部直線バーの更新
                 railFill.style.width = `${100 - percent}%`;
                 railFill.style.background = themeColor;
                 railFill.style.boxShadow = `0 0 8px ${themeColor}`;
@@ -407,6 +447,9 @@
 
         setInterval(updateChronoDeck, 1000);
         updateChronoDeck();
+        
+        // 画面サイズ変更時にもドット位置を即リセット
+        window.addEventListener('resize', updateChronoDeck);
     </script>
 </body>
 </html>
