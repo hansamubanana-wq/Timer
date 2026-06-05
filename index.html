@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CHRONO MATRIX - FULLSCREEN OS</title>
+    <title>CHRONO MATRIX - COGNITIVE OS</title>
     <style>
         :root {
             --bg-color: #020206;
@@ -11,6 +11,7 @@
             --accent-class: #00f2fe;
             --accent-break: #39ff14;
             --accent-warning: #ff0055;
+            --accent-voice: #bd00ff;
             --text-main: #ffffff;
             --text-sub: #414d66;
         }
@@ -20,9 +21,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
-            /* タップ時の青いハイライトを消す */
             -webkit-tap-highlight-color: transparent;
-            /* ユーザーによるテキスト選択を禁止してアプリ感を出す */
             user-select: none;
             -webkit-user-select: none;
         }
@@ -35,14 +34,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* スクロールを完全に禁止 */
             overflow: hidden;
             position: relative;
-            /* スマホの引っ張って更新（リロード）を禁止 */
             overscroll-behavior: none;
         }
 
-        /* サイバー背景 */
         body::before {
             content: "";
             position: absolute;
@@ -55,7 +51,6 @@
             z-index: 1;
         }
 
-        /* フレーム装飾（レスポンシブ対応で画面の端に固定） */
         .frame-corner {
             position: absolute;
             width: 4vmin;
@@ -72,37 +67,23 @@
         .bottom-left { bottom: 20px; left: 20px; border-right: none; border-top: none; }
         .bottom-right { bottom: 20px; right: 20px; border-left: none; border-top: none; }
 
-        /* メインコックピットパネル（画面サイズに合わせて伸縮） */
         .core-panel {
             width: 90vw;
             max-width: 440px;
-            /* 高さ制限を設け、縦長・横長どちらでも綺麗に収まるようにvminを使用 */
             height: auto;
-            max-height: 90vh;
+            max-height: 95vh;
             background: var(--panel-bg);
-            padding: 6vmin 5vmin;
+            padding: 5vmin 5vmin 4vmin;
             border-radius: 20px;
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 
-                0 25px 60px rgba(0, 0, 0, 0.8),
-                inset 0 0 40px rgba(0, 242, 254, 0.03);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
             text-align: center;
             position: relative;
             z-index: 10;
-        }
-
-        /* スキャンライン */
-        .core-panel::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
-            background-size: 100% 4px;
-            opacity: 0.3;
-            border-radius: 20px;
-            pointer-events: none;
+            display: flex;
+            flex-direction: column;
         }
 
         .panel-header {
@@ -110,81 +91,53 @@
             justify-content: space-between;
             font-size: 0.75rem;
             color: var(--text-sub);
-            margin-bottom: 4vmin;
+            margin-bottom: 3vmin;
             letter-spacing: 2px;
         }
 
         .glitch-title {
-            font-size: 10vmin;
-            /* パネルサイズを超えないよう最大サイズを制限 */
-            max-size: 3rem;
-            font-size: clamp(2rem, 8vw, 3rem);
+            font-size: clamp(2rem, 8vw, 2.8rem);
             font-weight: 900;
             letter-spacing: 2px;
             line-height: 1;
-            margin-bottom: 8px;
-            animation: textPulse 4s infinite alternate;
-        }
-
-        @keyframes textPulse {
-            0% { text-shadow: 0 0 8px rgba(255,255,255,0.1); }
-            100% { text-shadow: 0 0 15px rgba(255,255,255,0.3); }
+            margin-bottom: 6px;
         }
 
         .time-range {
             font-size: clamp(0.75rem, 3vw, 0.85rem);
             color: var(--text-sub);
             letter-spacing: 4px;
-            margin-bottom: 5vmin;
+            margin-bottom: 4vmin;
             text-transform: uppercase;
         }
 
-        /* 中央の円形クロノメーター（画面の大きさに滑らかに連動） */
         .chrono-container {
             position: relative;
-            width: clamp(180px, 55vw, 250px);
-            height: clamp(180px, 55vw, 250px);
-            margin: 0 auto 5vmin;
+            width: clamp(160px, 45vw, 210px);
+            height: clamp(160px, 45vw, 210px);
+            margin: 0 auto 4vmin;
+            flex-shrink: 0;
         }
 
         .chrono-svg {
             transform: rotate(-90deg);
             width: 100%;
             height: 100%;
-            viewBox: 0 0 260 260;
         }
 
-        .chrono-bg {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.02);
-            stroke-width: 8;
-        }
+        .chrono-bg { fill: none; stroke: rgba(255, 255, 255, 0.02); stroke-width: 8; }
+        .chrono-ticks { fill: none; stroke: rgba(255, 255, 255, 0.05); stroke-width: 2; stroke-dasharray: 2 12; }
+        .chrono-bar { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.3s linear, stroke 0.5s ease; }
 
-        .chrono-ticks {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.05);
-            stroke-width: 2;
-            stroke-dasharray: 2 12;
-        }
-
-        .chrono-bar {
-            fill: none;
-            stroke-width: 6;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.3s linear, stroke 0.5s ease;
-        }
-
-        /* メーター先端を追従する光のドット */
         .orbit-dot {
             position: absolute;
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
-            transition: transform 0.3s linear, background 0.5s, box-shadow 0.5s;
+            transition: transform 0.3s linear;
             z-index: 2;
         }
 
@@ -196,10 +149,10 @@
         }
 
         .time-left {
-            font-size: clamp(2.5rem, 12vw, 4rem);
+            font-size: clamp(2.2rem, 10vw, 3.5rem);
             font-weight: bold;
             font-variant-numeric: tabular-nums;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
             line-height: 1;
         }
 
@@ -207,61 +160,71 @@
             font-size: 0.6rem;
             color: var(--text-sub);
             letter-spacing: 5px;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
-        /* 下部タイムライン */
+        /* リアルタイム文字起こしログエリア */
+        .transcript-container {
+            width: 100%;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            text-align: left;
+            margin-bottom: 4vmin;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .transcript-text {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.7);
+            word-break: break-all;
+        }
+
+        .transcript-text .interim {
+            color: var(--text-sub);
+            font-style: italic;
+        }
+
+        /* 音声認識中のアニメーションバッジ */
+        .voice-pulse {
+            animation: v-pulse 1.5s infinite alternate;
+        }
+        @keyframes v-pulse {
+            0% { text-shadow: 0 0 4px var(--accent-voice); opacity: 0.6; }
+            100% { text-shadow: 0 0 12px var(--accent-voice); opacity: 1; }
+        }
+
         .timeline-box {
             position: relative;
-            padding-top: 3vmin;
+            padding-top: 2vmin;
             border-top: 1px rgba(255, 255, 255, 0.05) solid;
+            flex-shrink: 0;
         }
 
-        .rail {
-            position: relative;
-            width: 100%;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.03);
-            margin-bottom: 3vmin;
-        }
-
-        .rail-fill {
-            position: absolute;
-            top: 0; left: 0;
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s linear, background 0.5s;
-        }
-
-        .labels-grid {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .label-node {
-            font-size: clamp(0.6rem, 2.5vw, 0.75rem);
-            color: var(--text-sub);
-            transition: all 0.5s ease;
-        }
-
-        .label-node.active {
-            color: #ffffff;
-            font-weight: bold;
-        }
+        .rail { position: relative; width: 100%; height: 2px; background: rgba(255, 255, 255, 0.03); margin-bottom: 2vmin; }
+        .rail-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; transition: width 0.3s linear, background 0.5s; }
+        .labels-grid { display: flex; justify-content: space-between; }
+        .label-node { font-size: clamp(0.6rem, 2.5vw, 0.75rem); color: var(--text-sub); transition: all 0.5s ease; }
+        .label-node.active { color: #ffffff; font-weight: bold; }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="frame-corner top-left" id="c-tl"></div>
-    <div class="frame-corner top-right" id="c-tr"></div>
-    <div class="frame-corner bottom-left" id="c-bl"></div>
-    <div class="frame-corner bottom-right" id="c-br"></div>
+    <div class="frame-corner top-left"></div>
+    <div class="frame-corner top-right"></div>
+    <div class="frame-corner bottom-left"></div>
+    <div class="frame-corner bottom-right"></div>
 
-    <div class="core-panel">
+    <div class="core-panel" id="main-panel">
         <div class="panel-header">
-            <div id="status-node">NODE // STANDBY</div>
-            <div>LOCK_OS v3.8</div>
+            <div id="status-node">TAP TO START AUDIO //</div>
+            <div id="voice-status">MIC: OFF</div>
         </div>
 
         <div class="glitch-title" id="period-name">--------</div>
@@ -280,37 +243,30 @@
             </div>
         </div>
 
+        <div class="transcript-container" id="log-container">
+            <div class="transcript-text" id="transcript-output">画面をタップしてマイクを許可すると、ここにリアルタイムで文字起こしが表示されます...</div>
+        </div>
+
         <div class="timeline-box">
             <div class="rail">
                 <div class="rail-fill" id="rail-fill"></div>
             </div>
-            <div class="labels-grid" id="labels-grid">
-                </div>
+            <div class="labels-grid" id="labels-grid"></div>
         </div>
     </div>
 
     <script>
-        // --- ズーム（拡大縮小）をJavaScript側でも徹底的にブロック ---
-        // 1. ピンチイン・ピンチアウトの禁止
-        document.addEventListener('touchmove', function (event) {
-            if (event.touches.length > 1) {
-                event.preventDefault();
-            }
-        }, { passive: false });
-
-        // 2. ダブルタップズームの禁止
+        // ズームブロック処理
+        document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
         let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
+        document.addEventListener('touchend', e => {
             const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
+            if (now - lastTouchEnd <= 300) e.preventDefault();
             lastTouchEnd = now;
         }, false);
 
-        // --- タイマーシステム本体 ---
+        // 時間割
         function toMin(hh, mm) { return hh * 60 + mm; }
-        
         const schedule = [
             { name: "1限", start: toMin(8,40), end: toMin(9,25), type: "class" },
             { name: "休み時間", start: toMin(9,25), end: toMin(9,35), type: "break" },
@@ -329,7 +285,7 @@
         ];
 
         const bar = document.getElementById('chrono-bar');
-        const radius = 116; // 固定値ベースで計算（SVG viewBox対応）
+        const radius = 116;
         const circumference = radius * 2 * Math.PI;
         bar.style.strokeDasharray = `${circumference} ${circumference}`;
 
@@ -377,17 +333,17 @@
 
                 let themeColor = "var(--text-sub)";
                 if (currentPeriod.type === "class") {
-                    statusNode.innerText = "MODE // CLASS_ACTIVE";
+                    if(!micActive) statusNode.innerText = "MODE // CLASS_ACTIVE";
                     themeColor = "var(--accent-class)";
                 } else if (currentPeriod.type === "warning") {
-                    statusNode.innerText = "MODE // PRE_ALERT";
+                    if(!micActive) statusNode.innerText = "MODE // PRE_ALERT";
                     themeColor = "var(--accent-warning)";
                 } else {
-                    statusNode.innerText = "MODE // INTERMISSION";
+                    if(!micActive) statusNode.innerText = "MODE // INTERMISSION";
                     themeColor = "var(--accent-break)";
                 }
 
-                document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = themeColor);
+                if(!micActive) document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = themeColor);
 
                 periodName.innerText = currentPeriod.name;
                 periodName.style.color = themeColor;
@@ -403,21 +359,15 @@
 
                 const percent = (remainingSeconds / totalPeriodSeconds) * 100;
                 
-                const offset = circumference - (percent / 100) * circumference;
-                bar.style.strokeDashoffset = offset;
+                bar.style.strokeDashoffset = circumference - (percent / 100) * circumference;
                 bar.style.stroke = themeColor;
                 bar.style.filter = `drop-shadow(0 0 12px ${themeColor})`;
 
-                // viewBox(260x260)の中心(130, 130)からの相対座標で計算
                 const angle = (percent / 100) * 360 - 90; 
                 const angleRad = (angle * Math.PI) / 180;
                 const dotX = Math.cos(angleRad) * radius;
                 const dotY = Math.sin(angleRad) * radius;
                 
-                // CSSの％配置と組み合わせて正確に追従
-                orbitDot.style.transform = `translate(calc(-50% + ${dotX / 2.6}vw), calc(-50% + ${dotY / 2.6}vw))`;
-                
-                // PC用とスマホ用でコンテナサイズが変わるため、より堅牢なコンテナ基準幅でのレスポンシブ計算
                 const containerWidth = document.querySelector('.chrono-container').offsetWidth;
                 const scale = containerWidth / 260;
                 orbitDot.style.transform = `translate(calc(-50% + ${dotX * scale}px), calc(-50% + ${dotY * scale}px))`;
@@ -430,8 +380,8 @@
                 railFill.style.boxShadow = `0 0 8px ${themeColor}`;
 
             } else {
-                statusNode.innerText = "MODE // OFFLINE";
-                document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = "var(--text-sub)");
+                if(!micActive) statusNode.innerText = "MODE // OFFLINE";
+                if(!micActive) document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = "var(--text-sub)");
                 periodName.innerText = "OFF LINE";
                 periodName.style.color = "var(--text-sub)";
                 timeRange.innerText = "--:-- // --:--";
@@ -445,10 +395,71 @@
             }
         }
 
+        // --- 音声認識システム (Web Speech API) ---
+        let micActive = false;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let finalTranscript = ""; 
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true; // 連続認識
+            recognition.interimResults = true; // 途中の経過も取得
+            recognition.lang = 'ja-JP';
+
+            recognition.onstart = () => {
+                micActive = true;
+                document.getElementById('voice-status').innerText = "MIC: REC";
+                document.getElementById('voice-status').style.color = "var(--accent-voice)";
+                document.getElementById('voice-status').classList.add('voice-pulse');
+                document.getElementById('status-node').innerText = "SYSTEM // VOICE_RECORDING";
+                document.getElementById('status-node').style.color = "var(--accent-voice)";
+                document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = "var(--accent-voice)");
+            };
+
+            recognition.onend = () => {
+                // 授業中に途切れても自動で再起動させて永続化する
+                if (micActive) {
+                    recognition.start();
+                } else {
+                    document.getElementById('voice-status').innerText = "MIC: OFF";
+                    document.getElementById('voice-status').style.color = "var(--text-sub)";
+                    document.getElementById('voice-status').classList.remove('voice-pulse');
+                    updateChronoDeck();
+                }
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = "";
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + "<br>";
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                const outputEl = document.getElementById('transcript-output');
+                outputEl.innerHTML = finalTranscript + '<span class="interim">' + interimTranscript + '</span>';
+                
+                // 自動スクロール
+                const container = document.getElementById('log-container');
+                container.scrollTop = container.scrollHeight;
+            };
+        } else {
+            document.getElementById('transcript-output').innerText = "エラー: お使いのブラウザは音声認識に対応していません。";
+        }
+
+        // パネルタップで音声認識のON/OFFを切り替え
+        document.getElementById('main-panel').addEventListener('click', () => {
+            if (!recognition) return;
+            if (!micActive) {
+                document.getElementById('transcript-output').innerHTML = "音声の解析を開始します...<br>";
+                recognition.start();
+            }
+        });
+
         setInterval(updateChronoDeck, 1000);
         updateChronoDeck();
-        
-        // 画面サイズ変更時にもドット位置を即リセット
         window.addEventListener('resize', updateChronoDeck);
     </script>
 </body>
