@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chrono OS - Class Nexus</title>
+    <title>CHRONO MATRIX v3.5</title>
     <style>
         :root {
-            --bg-color: #05050d;
-            --panel-bg: rgba(10, 10, 25, 0.7);
+            --bg-color: #020206;
+            --panel-bg: rgba(6, 6, 14, 0.8);
             --accent-class: #00f2fe;
-            --accent-break: #00ff87;
-            --accent-warning: #ff3838;
+            --accent-break: #39ff14;
+            --accent-warning: #ff0055;
             --text-main: #ffffff;
-            --text-sub: #616e88;
+            --text-sub: #414d66;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace, sans-serif;
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
         }
 
         body {
@@ -33,138 +33,142 @@
             position: relative;
         }
 
-        /* 背景のアニメーション・サイバーグリッド */
+        /* サイバー背景 */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+                linear-gradient(rgba(0, 242, 254, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 254, 0.015) 1px, transparent 1px);
+            background-size: 20px 20px;
             background-position: center;
             z-index: 1;
         }
 
-        body::after {
-            content: "";
+        /* 4角のシャープなフレーム装飾 */
+        .frame-corner {
             position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, rgba(0, 255, 135, 0.05) 30%, transparent 60%);
-            animation: rotateBg 20s linear infinite;
-            z-index: 2;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--accent-class);
+            z-index: 5;
+            opacity: 0.4;
+            transition: border-color 0.5s;
         }
+        .top-left { top: 25px; left: 25px; border-right: none; border-bottom: none; }
+        .top-right { top: 25px; right: 25px; border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 25px; left: 25px; border-right: none; border-top: none; }
+        .bottom-right { bottom: 25px; right: 25px; border-left: none; border-top: none; }
 
-        @keyframes rotateBg {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* メインコンテナ */
-        .container {
-            width: 92%;
-            max-width: 480px;
+        /* メインコックピットパネル */
+        .core-panel {
+            width: 95%;
+            max-width: 440px;
             background: var(--panel-bg);
-            padding: 45px 35px;
-            border-radius: 16px;
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(0, 242, 254, 0.15);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 242, 254, 0.05);
+            padding: 45px 35px 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                0 25px 60px rgba(0, 0, 0, 0.8),
+                inset 0 0 40px rgba(0, 242, 254, 0.03);
             text-align: center;
             position: relative;
             z-index: 10;
         }
 
-        /* SF風のコーナー装飾 */
-        .container::before, .container::after {
+        /* スキャンライン */
+        .core-panel::after {
             content: "";
             position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--accent-class);
-        }
-        .container::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-        .container::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
-
-        /* ステータスバッジ */
-        .status-wrapper {
-            margin-bottom: 25px;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 4px;
+            opacity: 0.3;
+            border-radius: 20px;
+            pointer-events: none;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 5px 18px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            border-radius: 4px;
-            transition: all 0.5s ease;
-            border: 1px solid var(--text-sub);
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
             color: var(--text-sub);
-        }
-
-        /* 各種モードのネオンカラー定義 */
-        .mode-class {
-            color: var(--accent-class) !important;
-            border-color: var(--accent-class) !important;
-            background: rgba(0, 242, 254, 0.05);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
-        }
-        .mode-break {
-            color: var(--accent-break) !important;
-            border-color: var(--accent-break) !important;
-            background: rgba(0, 255, 135, 0.05);
-            box-shadow: 0 0 15px rgba(0, 255, 135, 0.2);
-        }
-        .mode-warning {
-            color: var(--accent-warning) !important;
-            border-color: var(--accent-warning) !important;
-            background: rgba(ff, 56, 56, 0.05);
-            box-shadow: 0 0 15px rgba(255, 56, 56, 0.2);
-        }
-
-        .period-title {
-            font-size: 2.4rem;
-            font-weight: 800;
+            margin-bottom: 30px;
             letter-spacing: 2px;
-            margin-bottom: 5px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .glitch-title {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            line-height: 1;
+            margin-bottom: 6px;
+            animation: textPulse 4s infinite alternate;
+        }
+
+        @keyframes textPulse {
+            0% { text-shadow: 0 0 8px rgba(255,255,255,0.1); }
+            100% { text-shadow: 0 0 15px rgba(255,255,255,0.3); }
         }
 
         .time-range {
             font-size: 0.85rem;
             color: var(--text-sub);
+            letter-spacing: 5px;
             margin-bottom: 35px;
-            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* 中央サークルタイマー */
-        .progress-container {
+        /* 中央の円形クロノメーター */
+        .chrono-container {
             position: relative;
             width: 260px;
             height: 260px;
-            margin: 0 auto 35px;
+            margin: 0 auto 40px;
         }
 
-        .progress-svg {
+        .chrono-svg {
             transform: rotate(-90deg);
             width: 260px;
             height: 260px;
         }
 
-        .progress-bg {
+        .chrono-bg {
             fill: none;
             stroke: rgba(255, 255, 255, 0.02);
-            stroke-width: 6;
+            stroke-width: 8;
         }
 
-        .progress-bar {
+        /* 内側のドット目盛り */
+        .chrono-ticks {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 2;
+            stroke-dasharray: 2 12;
+        }
+
+        .chrono-bar {
             fill: none;
             stroke-width: 6;
             stroke-linecap: round;
             transition: stroke-dashoffset 0.3s linear, stroke 0.5s ease;
-            filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.5));
+        }
+
+        /* メーター先端を追従する光のドット */
+        .orbit-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            top: 130px;
+            left: 130px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: transform 0.3s linear, background 0.5s, box-shadow 0.5s;
+            z-index: 2;
         }
 
         .timer-display {
@@ -175,90 +179,102 @@
         }
 
         .time-left {
-            font-size: 3.5rem;
-            font-weight: 100;
+            font-size: 4.2rem;
+            font-weight: bold;
             font-variant-numeric: tabular-nums;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
             line-height: 1;
         }
 
         .time-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-top: 12px;
+            letter-spacing: 6px;
+            margin-top: 8px;
         }
 
         /* 下部タイムライン */
-        .timeline {
-            display: flex;
-            justify-content: space-between;
+        .timeline-box {
             position: relative;
-            margin-top: 10px;
             padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px rgba(255, 255, 255, 0.05) solid;
         }
 
-        .timeline-item {
+        .rail {
+            position: relative;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 15px;
+        }
+
+        .rail-fill {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s linear, background 0.5s;
+        }
+
+        .labels-grid {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .label-node {
             font-size: 0.7rem;
             color: var(--text-sub);
-            position: relative;
-            padding-bottom: 5px;
             transition: all 0.5s ease;
         }
 
-        .timeline-item.active {
+        .label-node.active {
             color: #ffffff;
             font-weight: bold;
         }
-
-        .timeline-item::after {
-            content: "";
-            position: absolute;
-            bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 4px;
-            border-radius: 50%;
-            background: var(--text-sub);
-            transition: all 0.5s ease;
-        }
-
-        .timeline-item.active::after {
-            background: var(--accent-class);
-            box-shadow: 0 0 10px var(--accent-class);
-            width: 12px;
-            border-radius: 2px;
-        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="container">
-        <div class="status-wrapper">
-            <div class="status-badge" id="status-badge">SYSTEM STANDBY</div>
-        </div>
-        <div class="period-title" id="period-name">LOADING</div>
-        <div class="time-range" id="time-range">00:00 - 00:00</div>
+    <div class="frame-corner top-left" id="c-tl"></div>
+    <div class="frame-corner top-right" id="c-tr"></div>
+    <div class="frame-corner bottom-left" id="c-bl"></div>
+    <div class="frame-corner bottom-right" id="c-br"></div>
 
-        <div class="progress-container">
-            <svg class="progress-svg">
-                <circle class="progress-bg" cx="130" cy="130" r="120"></circle>
-                <circle class="progress-bar" id="progress-bar" cx="130" cy="130" r="120"></circle>
+    <div class="core-panel">
+        <div class="panel-header">
+            <div id="status-node">NODE // STANDBY</div>
+            <div>INDEX v3.5</div>
+        </div>
+
+        <div class="glitch-title" id="period-name">--------</div>
+        <div class="time-range" id="time-range">00:00 // 00:00</div>
+
+        <div class="chrono-container">
+            <svg class="chrono-svg">
+                <circle class="chrono-bg" cx="130" cy="130" r="116"></circle>
+                <circle class="chrono-ticks" cx="130" cy="130" r="106"></circle>
+                <circle class="chrono-bar" id="chrono-bar" cx="130" cy="130" r="116"></circle>
             </svg>
+            <div class="orbit-dot" id="orbit-dot"></div>
             <div class="timer-display">
                 <div class="time-left" id="time-left">00:00</div>
-                <div class="time-label" id="time-label">CHRONO INDEX</div>
+                <div class="time-label">REMAINING</div>
             </div>
         </div>
 
-        <div class="timeline" id="timeline">
+        <div class="timeline-box">
+            <div class="rail">
+                <div class="rail-fill" id="rail-fill"></div>
             </div>
+            <div class="labels-grid" id="labels-grid">
+                </div>
+        </div>
     </div>
 
     <script>
         function toMin(hh, mm) { return hh * 60 + mm; }
         
-        // 時間割データ
         const schedule = [
             { name: "1限", start: toMin(8,40), end: toMin(9,25), type: "class" },
             { name: "休み時間", start: toMin(9,25), end: toMin(9,35), type: "break" },
@@ -276,41 +292,32 @@
             { name: "7限", start: toMin(14,45), end: toMin(15,30), type: "class" }
         ];
 
-        const circle = document.getElementById('progress-bar');
-        const radius = circle.r.baseVal.value;
+        const bar = document.getElementById('chrono-bar');
+        const radius = bar.r.baseVal.value;
         const circumference = radius * 2 * Math.PI;
-        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        bar.style.strokeDasharray = `${circumference} ${circumference}`;
 
-        function setProgress(percent, color) {
-            const offset = circumference - (percent / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-            circle.style.stroke = color;
-        }
-
-        function formatTime(min) {
-            const h = Math.floor(min / 60).toString().padStart(2, '0');
-            const m = (min % 60).toString().padStart(2, '0');
-            return `${h}:${m}`;
-        }
-
-        // 下部タイムライン（授業のみ）の生成
-        const timelineEl = document.getElementById('timeline');
+        // 下部ラベル生成
+        const grid = document.getElementById('labels-grid');
         schedule.filter(s => s.type === "class").forEach(s => {
-            const item = document.createElement('div');
-            item.className = 'timeline-item';
-            item.id = `tl-${s.name}`;
-            item.innerText = s.name;
-            timelineEl.appendChild(item);
+            const node = document.createElement('div');
+            node.className = 'label-node';
+            node.id = `node-${s.name}`;
+            node.innerText = s.name;
+            grid.appendChild(node);
         });
 
-        function updateTimer() {
+        function formatTime(min) {
+            return `${Math.floor(min / 60).toString().padStart(2, '0')}:${(min % 60).toString().padStart(2, '0')}`;
+        }
+
+        function updateChronoDeck() {
             const now = new Date();
             const currentMin = now.getHours() * 60 + now.getMinutes();
             const currentSec = now.getSeconds();
             const totalCurrentSeconds = currentMin * 60 + currentSec;
 
             let currentPeriod = null;
-
             for (let i = 0; i < schedule.length; i++) {
                 if (currentMin >= schedule[i].start && currentMin < schedule[i].end) {
                     currentPeriod = schedule[i];
@@ -318,64 +325,88 @@
                 }
             }
 
-            const badge = document.getElementById('status-badge');
+            const statusNode = document.getElementById('status-node');
             const periodName = document.getElementById('period-name');
             const timeRange = document.getElementById('time-range');
             const timeLeft = document.getElementById('time-left');
+            const railFill = document.getElementById('rail-fill');
+            const orbitDot = document.getElementById('orbit-dot');
 
-            document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.label-node').forEach(el => el.classList.remove('active'));
 
             if (currentPeriod) {
                 if (currentPeriod.type === "class") {
-                    const tlItem = document.getElementById(`tl-${currentPeriod.name}`);
-                    if (tlItem) tlItem.classList.add('active');
+                    const activeNode = document.getElementById(`node-${currentPeriod.name}`);
+                    if (activeNode) activeNode.classList.add('active');
                 }
 
-                // クラスのリセットと付与
-                badge.className = "status-badge";
-                let activeColor = "#616e88";
-
+                let themeColor = "var(--text-sub)";
                 if (currentPeriod.type === "class") {
-                    badge.innerText = "ACTIVE CLASS";
-                    badge.classList.add("mode-class");
-                    activeColor = "#00f2fe";
+                    statusNode.innerText = "MODE // CLASS_ACTIVE";
+                    themeColor = "var(--accent-class)";
                 } else if (currentPeriod.type === "warning") {
-                    badge.innerText = "PRE-ALERT";
-                    badge.classList.add("mode-warning");
-                    activeColor = "#ff3838";
+                    statusNode.innerText = "MODE // PRE_ALERT";
+                    themeColor = "var(--accent-warning)";
                 } else {
-                    badge.innerText = "INTERMISSION";
-                    badge.classList.add("mode-break");
-                    activeColor = "#00ff87";
+                    statusNode.innerText = "MODE // INTERMISSION";
+                    themeColor = "var(--accent-break)";
                 }
+
+                // コーナーフレームの色も連動
+                document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = themeColor);
 
                 periodName.innerText = currentPeriod.name;
-                timeRange.innerText = `${formatTime(currentPeriod.start)} - ${formatTime(currentPeriod.end)}`;
+                periodName.style.color = themeColor;
+                timeRange.innerText = `${formatTime(currentPeriod.start)} // ${formatTime(currentPeriod.end)}`;
 
-                // 残り時間の秒単位計算
                 const totalPeriodSeconds = (currentPeriod.end - currentPeriod.start) * 60;
                 const elapsedSeconds = totalCurrentSeconds - (currentPeriod.start * 60);
                 const remainingSeconds = totalPeriodSeconds - elapsedSeconds;
 
-                const displayMin = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
-                const displaySec = (remainingSeconds % 60).toString().padStart(2, '0');
-                timeLeft.innerText = `${displayMin}:${displaySec}`;
+                const m = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
+                const s = (remainingSeconds % 60).toString().padStart(2, '0');
+                timeLeft.innerText = `${m}:${s}`;
 
                 const percent = (remainingSeconds / totalPeriodSeconds) * 100;
-                setProgress(percent, activeColor);
+                
+                // 円形バーの更新
+                const offset = circumference - (percent / 100) * circumference;
+                bar.style.strokeDashoffset = offset;
+                bar.style.stroke = themeColor;
+                bar.style.filter = `drop-shadow(0 0 12px ${themeColor})`;
+
+                // 先端ドットの位置計算 (角度に変換)
+                const angle = (percent / 100) * 360 - 90; 
+                const angleRad = (angle * Math.PI) / 180;
+                const dotX = Math.cos(angleRad) * radius;
+                const dotY = Math.sin(angleRad) * radius;
+                orbitDot.style.transform = `translate(calc(-50% + ${dotX}px), calc(-50% + ${dotY}px))`;
+                orbitDot.style.background = "#ffffff";
+                orbitDot.style.boxShadow = `0 0 12px #ffffff, 0 0 20px ${themeColor}`;
+
+                // 下部直線バーの更新
+                railFill.style.width = `${100 - percent}%`;
+                railFill.style.background = themeColor;
+                railFill.style.boxShadow = `0 0 8px ${themeColor}`;
 
             } else {
-                badge.className = "status-badge";
-                badge.innerText = "OFF LINE";
-                periodName.innerText = "授業時間外";
-                timeRange.innerText = "--:-- - --:--";
+                statusNode.innerText = "MODE // OFFLINE";
+                document.querySelectorAll('.frame-corner').forEach(el => el.style.borderColor = "var(--text-sub)");
+                periodName.innerText = "OFF LINE";
+                periodName.style.color = "var(--text-sub)";
+                timeRange.innerText = "--:-- // --:--";
                 timeLeft.innerText = "00:00";
-                setProgress(0, "#616e88");
+                
+                bar.style.strokeDashoffset = circumference;
+                orbitDot.style.transform = "translate(-50%, -50%)";
+                orbitDot.style.boxShadow = "none";
+                orbitDot.style.background = "transparent";
+                railFill.style.width = "0%";
             }
         }
 
-        setInterval(updateTimer, 1000);
-        updateTimer();
+        setInterval(updateChronoDeck, 1000);
+        updateChronoDeck();
     </script>
 </body>
 </html>
